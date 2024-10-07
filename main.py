@@ -69,11 +69,31 @@ class CompilerUI(tk.Tk):
             self.editor_area.insert(tk.END, code)  # Insert file content into editor
 
     def compile_code(self):
-        # Placeholder: Functionality to process and compile the code
+        # Placeholder for lexical analysis function
+        # - Scans and tokenizes the code from the editor area
+        # - Replaces lexemes with tokens
+        # - Displays error messages in the info area for lexical errors
+        # - Outputs a .tkn file with the token stream
+        # - Displays a list of variables in the output section
         pass
 
     def show_tokenized_code(self):
-        # Placeholder: Functionality to display tokenized code
+        # Placeholder to display the tokenized version of the code
+        # - Fetch tokenized code (from compile_code)
+        # - Display it in the info_area
+        pass
+
+    # Additional methods for functionalities can be added here:
+    def save_token_file(self, token_stream):
+        # Placeholder to save tokenized code to a .tkn file
+        pass
+
+    def display_variables_table(self):
+        # Placeholder to display the variables and types table in the output area
+        pass
+
+    def display_lexical_errors(self, error_list):
+        # Placeholder to display lexical errors with line numbers in the output area
         pass
 
 if __name__ == "__main__":
