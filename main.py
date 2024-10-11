@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import filedialog, scrolledtext, messagebox, simpledialog
+from tkinter import filedialog, scrolledtext, messagebox
 
 
 # Main application class
