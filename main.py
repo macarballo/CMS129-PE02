@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import filedialog, scrolledtext, messagebox
 import os
 
+
 # Main application class
 class CompilerUI(tk.Tk):
     def __init__(self):
@@ -49,7 +50,9 @@ class CompilerUI(tk.Tk):
         )
         token_button.pack(side=tk.LEFT, padx=15, ipadx=10, ipady=5)
 
-        output_button = tk.Button(button_frame, text="Save Tokenized Output", command=self.save_token_file, **button_style)
+        output_button = tk.Button(
+            button_frame, text="Save Tokenized Output", command=self.save_token_file, **button_style
+        )
         output_button.pack(side=tk.LEFT, padx=15, ipadx=10, ipady=5)
 
         # I/O Frame (for input code editor and output console)
@@ -155,8 +158,7 @@ class CompilerUI(tk.Tk):
             self.save_file_as()
 
     def save_file_as(self):
-        self.file_path = filedialog.asksaveasfilename(defaultextension=".iol",
-                                                        filetypes=[("IOL files", "*.iol")])
+        self.file_path = filedialog.asksaveasfilename(defaultextension=".iol", filetypes=[("IOL files", "*.iol")])
         if self.file_path:
             with open(self.file_path, 'w') as file:
                 file.write(self.editor_area.get(1.0, tk.END).strip())
@@ -197,7 +199,7 @@ class CompilerUI(tk.Tk):
         if not self.token_stream:
             messagebox.showwarning("Warning", "No tokenized output available. Compile the code first.")
             return
-        
+
         token_content = "\n".join(f"{lexeme} -> {token}" for lexeme, token in self.token_stream)
         with open(self.token_file_path, "w") as file:
             file.write(token_content)
@@ -206,6 +208,7 @@ class CompilerUI(tk.Tk):
     def lexical_analysis(self, code):
         tokens = []
         self.error_list = []
+        # Define keywords and types
         keywords = {"IOL", "LOI", "INTO", "IS", "BEG", "NEWLN", "PRINT", "ADD", "SUB", "MULT", "DIV", "MOD"}
         types = {"INT", "STR"}
         lines = code.splitlines()
@@ -216,26 +219,28 @@ class CompilerUI(tk.Tk):
                 continue
 
             for i, word in enumerate(words):
+                # Check if the word is a keyword or a type (INT or STR)
                 if word in keywords or word in types:
                     tokens.append((word, word))
+                    # Handle variable declaration if a type is encountered
                     if word in types and i + 1 < len(words):
-                        # Handle variable declaration
                         var_name = words[i + 1]
                         if var_name.isidentifier():
                             default_value = 0 if word == "INT" else "Unassigned"
                             self.variables[var_name] = {"type": word, "value": default_value}
                             tokens.append((var_name, "IDENT"))
                         else:
-                            self.error_list.append(f"Line {line_num}: Invalid variable name '{var_name}'.")
-                    break
-                elif word.isidentifier():
-                    tokens.append((word, "IDENT"))
+                            self.error_list.append(f"Invalid identifier '{var_name}' on line {line_num}")
+                # Check if the word is a valid integer literal
                 elif word.isdigit():
                     tokens.append((word, "INT_LIT"))
-                elif word == "\n":
-                    tokens.append((word, "NEWLN"))
+                # Check if the word is a valid identifier
+                elif word.isidentifier():
+                    tokens.append((word, "IDENT"))
+                # If the word does not match any valid token, mark it as an error
                 else:
-                    self.error_list.append(f"Line {line_num}: Invalid token '{word}'.")
+                    tokens.append((word, "ERR_LEX"))
+                    self.error_list.append(f"Unknown lexeme '{word}' on line {line_num}")
 
         return tokens
 
@@ -252,17 +257,17 @@ class CompilerUI(tk.Tk):
         value_col_width = max(len("Value"), 15) + 2
 
         # Clear the info area and add the header for the table
-        self.info_area.delete(1.0, tk.END)
+        self.output_area.delete(1.0, tk.END)
         header = f"{'Variable':<{var_col_width}} {'Type':<{type_col_width}} {'Value':<{value_col_width}}\n"
-        self.info_area.insert(tk.END, header)
-        self.info_area.insert(tk.END, "-" * (var_col_width + type_col_width + value_col_width) + "\n")
+        self.output_area.insert(tk.END, header)
+        self.output_area.insert(tk.END, "-" * (var_col_width + type_col_width + value_col_width) + "\n")
 
         # Display each variable with its name, type, and value
         for variable, details in self.variables.items():
             var_type = details.get("type", "Unassigned")
             value = details.get("value", "Unassigned")
             row = f"{variable:<{var_col_width}} {var_type:<{type_col_width}} {value:<{value_col_width}}\n"
-            self.info_area.insert(tk.END, row)
+            self.output_area.insert(tk.END, row)
 
 
 if __name__ == "__main__":
