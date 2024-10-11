@@ -1,0 +1,11 @@
+DEFINED -> IDENT
+x -> IDENT
+INTO -> INTO
+y -> IDENT
+IS -> IS
+5 -> INT_LIT
+x -> IDENT
+= -> OPERATOR
+x -> IDENT
++ -> OPERATOR
+y -> IDENT
