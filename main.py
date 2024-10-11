@@ -143,6 +143,7 @@ class CompilerUI(tk.Tk):
     def lexical_analysis(self, code):
         tokens = []
         self.error_list = []
+        # Define keywords and types
         keywords = {"IOL", "LOI", "INTO", "IS", "BEG", "NEWLN", "PRINT", "ADD", "SUB", "MULT", "DIV", "MOD"}
         types = {"INT", "STR"}
         lines = code.splitlines()
@@ -153,10 +154,11 @@ class CompilerUI(tk.Tk):
                 continue
 
             for i, word in enumerate(words):
+                # Check if the word is a keyword or a type (INT or STR)
                 if word in keywords or word in types:
                     tokens.append((word, word))
+                    # Handle variable declaration if a type is encountered
                     if word in types and i + 1 < len(words):
-                        # Handle variable declaration
                         var_name = words[i + 1]
                         if var_name.isidentifier():
                             default_value = 0 if word == "INT" else "Unassigned"
@@ -164,10 +166,13 @@ class CompilerUI(tk.Tk):
                             tokens.append((var_name, "IDENT"))
                         else:
                             self.error_list.append(f"Invalid identifier '{var_name}' on line {line_num}")
+                # Check if the word is a valid integer literal
                 elif word.isdigit():
                     tokens.append((word, "INT_LIT"))
+                # Check if the word is a valid identifier
                 elif word.isidentifier():
                     tokens.append((word, "IDENT"))
+                # If the word does not match any valid token, mark it as an error
                 else:
                     tokens.append((word, "ERR_LEX"))
                     self.error_list.append(f"Unknown lexeme '{word}' on line {line_num}")
