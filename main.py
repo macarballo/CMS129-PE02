@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import filedialog, scrolledtext, messagebox
-import os
 
 
 # Main application class
